@@ -698,7 +698,7 @@
       <!-- SCREEN 2: GENERATOR -->
       <div id="screen-generator" class="screen">
         <div class="subtitle">
-          Genera <span>5 patrones distintos</span> de apuesta desde un solo presupuesto. Si el total de la apuesta es mayor a 3 MXN, se usa <span>solo 1 tirada</span> en esa línea.
+          Genera <span>5 patrones distintos</span> de apuesta desde un solo presupuesto. Si el total de la apuesta es mayor a 6 MXN, se usa <span>solo 1 tirada</span> en esa línea.
         </div>
 
         <div class="current-game">
@@ -856,9 +856,9 @@
   }
 
   function generateSpins(sum){
-    if (sum > 3) return 1;
-    const min = 2;
-    const max = 7;
+    if (sum > 6) return 1;
+    const min = 1;
+    const max = 5;
     return Math.floor(Math.random()*(max - min + 1)) + min;
   }
 
