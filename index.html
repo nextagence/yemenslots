@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
@@ -636,21 +636,21 @@
       <div class="top-row">
         <h1>
           <span class="cipher-dot"></span>
-          Generador de patrones
+          مولّد الأنماط
         </h1>
         <div class="status-pill">
           <span class="status-dot"></span>
-          <span>Modo hacker activo</span>
+          <span>وضع الهكر مفعّل</span>
         </div>
       </div>
 
       <!-- SCREEN 1: SELECT GAME -->
       <div id="screen-select" class="screen active">
         <div class="subtitle">
-          Elige el <span>slot</span> para calcular patrones de apuesta basados en su tabla real de apuestas.
+          اختر لعبة السلوت لحساب أنماط الرهانات حسب جدول الرهانات الحقيقي.
         </div>
 
-        <div class="games-title">Selecciona el juego:</div>
+        <div class="games-title">اختر اللعبة:</div>
 
         <div class="games-column">
           <!-- Sweet Bonanza Super Scatter -->
@@ -691,14 +691,14 @@
         </div>
 
         <div class="hint">
-          Toca un juego para abrir el generador de patrones específico para ese slot.
+          اضغط على لعبة لفتح مولّد الأنماط الخاص بها.
         </div>
       </div>
 
       <!-- SCREEN 2: GENERATOR -->
       <div id="screen-generator" class="screen">
         <div class="subtitle">
-          Genera <span>5 patrones distintos</span> de apuesta desde un solo presupuesto. Si el total de la apuesta es mayor a 6 MXN, se usa <span>solo 1 tirada</span> en esa línea.
+          أنشئ <span>٥ أنماط مختلفة</span> من ميزانية واحدة. إذا كان مجموع الرهان أكبر من 6 USD فسيتم استخدام <span>لفة واحدة فقط</span> في هذا الصف.
         </div>
 
         <div class="current-game">
@@ -707,25 +707,25 @@
           </div>
           <div class="current-game-text">
             <div class="current-game-title" id="currentGameLabel">Game</div>
-            <div class="current-game-sub" id="currentGameDesc">Apuestas vinculadas a la tabla real del slot.</div>
+            <div class="current-game-sub" id="currentGameDesc">رهانات مرتبطة بجدول الرهانات الحقيقي في السلوت.</div>
           </div>
         </div>
 
         <button id="backBtn" class="btn-ghost">
           <span class="icon">←</span>
-          <span>Cambiar de juego</span>
+          <span>تغيير اللعبة</span>
         </button>
 
         <div class="controls">
           <div style="display:flex;flex-direction:column;width:100%">
             <label for="budget">
-              Presupuesto total (MXN)
-              <span class="chip">Desde 5 en adelante</span>
+              إجمالي الميزانية (USD)
+              <span class="chip">من 5 فما فوق</span>
             </label>
             <input id="budget" type="number" value="6" min="1" placeholder="Ejemplo: 6">
           </div>
           <button id="gen" class="btn">
-            <span>Obtener estrategia</span>
+            <span>الحصول على الاستراتيجية</span>
           </button>
         </div>
 
@@ -736,14 +736,14 @@
               <div class="loader-dot"></div>
               <div class="loader-dot"></div>
             </div>
-            <span>Analizando patrones según tu presupuesto…</span>
+            <span>تحليل الأنماط حسب ميزانيتك...</span>
           </div>
           <div class="loader-tag">SYSTEM: ACTIVE</div>
         </div>
 
         <div id="output" class="output">
           <div class="output-header">
-            <span>Resultado del último análisis</span>
+            <span>نتيجة آخر تحليل</span>
             <span class="output-header-code" id="sessionTag">SESSION #0000</span>
           </div>
           <div id="list" class="list"></div>
@@ -753,8 +753,8 @@
 
       <!-- FOOTER -->
       <div class="footer">
-        <div>PatternX Predictor <span>v1.4.2</span> · Optimizado para MXN</div>
-        <div style="margin-top:2px;">Uso interno de estrategia · No garantiza resultados.</div>
+        <div>PatternX Predictor <span>v1.4.2</span> · مهيأ للعملة USD</div>
+        <div style="margin-top:2px;">أداة للاستراتيجية الداخلية · لا تضمن أي نتائج.</div>
       </div>
 
     </div>
@@ -767,19 +767,19 @@
   const GAMES = {
     sweet: {
       label: "Sweet Bonanza Super Scatter",
-      desc: "Apuestas vinculadas a la tabla real del slot.",
+      desc: "رهانات مرتبطة بجدول الرهانات الحقيقي في السلوت.",
       img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMu-PtKvlakmJOzpGiDrvwhVo7VWl1Y5zddQ&s",
       bets: [0.6, 1.2, 1.8, 2, 2.4, 3, 3.6, 4, 4.2, 4.8, 5.4, 6, 8, 10, 12, 14, 16, 18, 20, 30, 40, 50]
     },
     doghouse: {
       label: "The Dog House Megaways",
-      desc: "Apuestas vinculadas a la tabla real del slot.",
+      desc: "رهانات مرتبطة بجدول الرهانات الحقيقي في السلوت.",
       img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSryJQj5Dj8mBT6G3XtvgeC7zEcnXkQE7iI-w&s",
       bets: [1.4, 2.8, 4.2, 5.6, 7, 8.4, 9.8, 10, 11.2, 12.6, 14, 20, 30, 40, 50]
     },
     olympus: {
       label: "Gates of Olympus",
-      desc: "Apuestas vinculadas a la tabla real del slot.",
+      desc: "رهانات مرتبطة بجدول الرهانات الحقيقي في السلوت.",
       img: "https://rara-avis.by/wp-content/uploads/2023/07/gates-of-olympus-pragmatic-play.jpg",
       bets: [1.4, 2.8, 4.2, 5.6, 7, 8.4, 9.8, 10, 11.2, 12.6, 14, 20, 30, 40, 50]
     }
@@ -889,15 +889,15 @@
 
       const label = document.createElement("div");
       label.className = "label";
-      label.textContent = "Apuesta total: " + total + " MXN";
+      label.textContent = "إجمالي الرهان: " + total + " USD";
 
       const sub = document.createElement("div");
       sub.className = "sub-label";
-      sub.textContent = "Línea #" + (i+1) + " — patrón de alta varianza";
+      sub.textContent = "السطر #" + (i+1) + " — نمط عالي التذبذب";
 
       const meta = document.createElement("div");
       meta.className = "meta";
-      meta.textContent = "Número de tiradas: " + spins;
+      meta.textContent = "عدد اللفات: " + spins;
 
       main.appendChild(label);
       main.appendChild(sub);
@@ -907,7 +907,7 @@
     }
 
     const sum = pattern.reduce((a,b)=>a+b,0);
-    footer.textContent = "TOTAL DISTRIBUIDO ≈ " + sum.toFixed(2) + " MXN   |   PRESUPUESTO INICIAL = " + budget + " MXN";
+    footer.textContent = "TOTAL DISTRIBUIDO ≈ " + sum.toFixed(2) + " USD   |   PRESUPUESTO INICIAL = " + budget + " USD";
     out.style.display = "block";
   }
 
@@ -918,11 +918,11 @@
   btn.addEventListener("click", () => {
     const budget = parseFloat(document.getElementById("budget").value) || 0;
     if (!currentGameKey){
-      alert("Selecciona un juego primero.");
+      alert("اختر اللعبة أولاً.");
       return;
     }
     if (budget <= 0){
-      alert("Introduce un presupuesto válido (mayor que 0).");
+      alert("أدخل ميزانية صالحة (أكبر من 0).");
       return;
     }
 
