@@ -1,0 +1,947 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>PatternX — Slot Pattern Generator</title>
+
+  <style>
+    :root{
+      --bg:#020617;
+      --panel:#050816;
+      --accent:#22c55e;
+      --accent-soft:rgba(34,197,94,0.2);
+      --accent-strong:#4ade80;
+      --muted:#9ca3af;
+      --text:#e5e7eb;
+      --badge-bg:rgba(34,197,94,0.14);
+    }
+
+    *{box-sizing:border-box;}
+
+    html,body{
+      margin:0;
+      height:100%;
+      background:radial-gradient(circle at top,#0b1120,#020617 55%,#000 100%);
+      color:var(--text);
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background-image:
+        linear-gradient(90deg,rgba(148,163,184,0.06) 1px,transparent 1px),
+        linear-gradient(180deg,rgba(148,163,184,0.06) 1px,transparent 1px);
+      background-size:40px 40px;
+      opacity:.55;
+      pointer-events:none;
+      z-index:-2;
+    }
+
+    body::after{
+      content:"";
+      position:fixed;
+      width:520px;
+      height:520px;
+      background:radial-gradient(circle,rgba(34,197,94,0.22),transparent 65%);
+      top:-120px;
+      left:50%;
+      transform:translateX(-50%);
+      filter:blur(8px);
+      opacity:.7;
+      z-index:-2;
+      pointer-events:none;
+    }
+
+    .wrap{
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:16px;
+    }
+
+    .panel{
+      width:100%;
+      max-width:520px;
+      border-radius:20px;
+      padding:16px 16px 10px;
+      background:radial-gradient(circle at top,#020617,#020617 55%,#000 100%);
+      border:1px solid rgba(148,163,184,0.35);
+      box-shadow:
+        0 24px 80px rgba(0,0,0,.95),
+        0 0 0 1px rgba(15,23,42,0.9),
+        0 0 22px rgba(34,197,94,0.18);
+      position:relative;
+      overflow:hidden;
+      transition:opacity .3s ease, transform .3s ease, filter .3s ease;
+    }
+
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:1px;
+      border-radius:18px;
+      background:radial-gradient(circle at 0 0,rgba(34,197,94,0.12),transparent 60%),
+                 radial-gradient(circle at 100% 100%,rgba(56,189,248,0.16),transparent 55%);
+      opacity:.9;
+      pointer-events:none;
+      z-index:-1;
+    }
+
+    body.page-transition .panel{
+      opacity:0.7;
+      filter:blur(1px);
+    }
+
+    .panel-inner{position:relative;z-index:1;}
+
+    .app-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:8px;
+    }
+
+    .logo-block{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .logo-mark{
+      width:32px;
+      height:32px;
+      border-radius:12px;
+      background:radial-gradient(circle at 0 0,#22c55e,#0f172a);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      font-size:16px;
+      color:#022c22;
+      box-shadow:0 0 18px rgba(34,197,94,0.7);
+    }
+
+    .logo-text-main{
+      font-size:13px;
+      font-weight:700;
+      color:#e5e7eb;
+    }
+
+    .logo-text-sub{
+      font-size:10px;
+      color:var(--muted);
+    }
+
+    .app-version{
+      font-size:11px;
+      color:var(--muted);
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.4);
+      background:rgba(15,23,42,0.8);
+    }
+
+    .top-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:6px;
+    }
+
+    h1{
+      margin:0;
+      font-size:18px;
+      color:var(--accent-strong);
+      letter-spacing:.03em;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .cipher-dot{
+      width:7px;
+      height:7px;
+      border-radius:999px;
+      background:var(--accent);
+      box-shadow:0 0 12px rgba(34,197,94,0.9);
+      animation:pulse-dot 1.4s infinite;
+    }
+
+    @keyframes pulse-dot{
+      0%{transform:scale(1);opacity:0.9}
+      50%{transform:scale(1.4);opacity:0.3}
+      100%{transform:scale(1);opacity:0.9}
+    }
+
+    .status-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 9px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.4);
+      background:linear-gradient(135deg,rgba(15,23,42,0.9),rgba(15,23,42,0.6));
+      font-size:11px;
+      color:var(--muted);
+    }
+
+    .status-dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:var(--accent);
+      box-shadow:0 0 10px rgba(34,197,94,0.9);
+    }
+
+    .subtitle{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:2px;
+      line-height:1.6;
+    }
+
+    .subtitle span{
+      color:var(--accent-strong);
+      font-weight:600;
+    }
+
+    .screen{display:none;}
+    .screen.active{display:block;}
+
+    .games-title{
+      margin-top:12px;
+      font-size:14px;
+      font-weight:700;
+      color:#e5e7eb;
+    }
+
+    .games-column{
+      margin-top:12px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .game-card{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(148,163,184,0.5);
+      background:radial-gradient(circle at top,rgba(15,23,42,0.95),rgba(15,23,42,1));
+      cursor:pointer;
+      transition:transform .15s ease-out, box-shadow .15s ease-out, border-color .15s ease-out, background .15s ease-out;
+    }
+
+    .game-card:hover{
+      transform:translateY(-3px);
+      border-color:rgba(34,197,94,0.7);
+      box-shadow:0 10px 30px rgba(34,197,94,0.25);
+      background:radial-gradient(circle at top,rgba(22,163,74,0.22),rgba(15,23,42,1));
+    }
+
+    .game-thumb{
+      width:110px;
+      height:110px;
+      border-radius:16px;
+      overflow:hidden;
+      flex-shrink:0;
+      background:#020617;
+    }
+
+    .game-thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .game-info{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      text-align:left;
+    }
+
+    .game-name{
+      font-size:15px;
+      font-weight:700;
+      color:#fff;
+    }
+
+    .game-meta{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .hint{
+      margin-top:10px;
+      font-size:11px;
+      color:var(--muted);
+    }
+
+    .current-game{
+      margin-top:4px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 9px;
+      border-radius:12px;
+      background:radial-gradient(circle at 0 0,rgba(34,197,94,0.12),rgba(15,23,42,0.96));
+      border:1px solid rgba(34,197,94,0.5);
+    }
+
+    .current-game-thumb{
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      overflow:hidden;
+      background:#020617;
+      flex-shrink:0;
+    }
+
+    .current-game-thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .current-game-text{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .current-game-title{
+      font-size:13px;
+      font-weight:700;
+      color:#f9fafb;
+    }
+
+    .current-game-sub{
+      font-size:11px;
+      color:var(--muted);
+    }
+
+    .btn-ghost{
+      margin-top:10px;
+      padding:9px 14px;
+      border-radius:999px;
+      border:1px solid rgba(34,197,94,0.6);
+      background:radial-gradient(circle at top,rgba(15,23,42,0.95),rgba(15,23,42,1));
+      color:#e5e7eb;
+      font-size:12px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-weight:500;
+      box-shadow:0 0 0 1px rgba(15,23,42,0.9);
+    }
+
+    .btn-ghost:hover{
+      border-color:rgba(34,197,94,0.9);
+      box-shadow:0 8px 24px rgba(34,197,94,0.35);
+      background:radial-gradient(circle at top,rgba(22,163,74,0.18),rgba(15,23,42,1));
+    }
+
+    .btn-ghost span.icon{
+      width:22px;
+      height:22px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.7);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:13px;
+    }
+
+    .controls{
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      align-items:flex-end;
+      flex-wrap:wrap;
+    }
+
+    label{
+      font-size:12px;
+      font-weight:600;
+      color:var(--muted);
+      margin-bottom:4px;
+      display:flex;
+      align-items:center;
+      gap:5px;
+    }
+
+    .chip{
+      font-size:10px;
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.5);
+      color:var(--muted);
+    }
+
+    input[type=number]{
+      padding:10px 10px;
+      border-radius:10px;
+      background:radial-gradient(circle at top,#020617,#020617 60%,#020617);
+      border:1px solid rgba(148,163,184,0.4);
+      color:#e5e7eb;
+      font-weight:600;
+      width:160px;
+      font-size:14px;
+      box-shadow:0 0 0 1px rgba(15,23,42,0.9);
+    }
+
+    input[type=number]::placeholder{
+      color:#6b7280;
+      font-weight:400;
+    }
+
+    input:focus{
+      outline:none;
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(34,197,94,0.4),
+        0 0 12px rgba(34,197,94,0.6);
+      border-color:rgba(34,197,94,0.7);
+    }
+
+    .btn{
+      padding:10px 14px;
+      border:none;
+      border-radius:12px;
+      background:radial-gradient(circle at top,#22c55e,#16a34a);
+      color:#022c22;
+      font-weight:750;
+      cursor:pointer;
+      font-size:14px;
+      width:100%;
+      letter-spacing:.02em;
+      text-shadow:0 0 6px rgba(15,118,110,0.7);
+      box-shadow:
+        0 10px 30px rgba(34,197,94,0.35),
+        0 0 18px rgba(22,163,74,0.7);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .btn span{position:relative;z-index:1;}
+
+    .btn::before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:conic-gradient(from 0deg,rgba(34,197,94,0.1),transparent,transparent,rgba(56,189,248,0.16),transparent);
+      animation:spin 2.4s linear infinite;
+      opacity:0.8;
+    }
+
+    .btn::after{
+      content:"";
+      position:absolute;
+      inset:2px;
+      border-radius:10px;
+      background:linear-gradient(180deg,#22c55e,#166534);
+    }
+
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    .btn:disabled{
+      opacity:0.6;
+      cursor:not-allowed;
+      box-shadow:none;
+    }
+
+    .loader{
+      display:none;
+      margin-top:10px;
+      padding:7px 10px;
+      border-radius:10px;
+      background:radial-gradient(circle at 0 0,rgba(34,197,94,0.18),transparent 70%);
+      border:1px dashed rgba(34,197,94,0.5);
+      font-size:12px;
+      color:var(--muted);
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .loader-left{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .loader-dots{
+      display:inline-flex;
+      gap:4px;
+    }
+
+    .loader-dot{
+      width:5px;
+      height:5px;
+      border-radius:999px;
+      background:var(--accent-strong);
+      opacity:0.25;
+      animation:loaderBlink 1s infinite alternate;
+    }
+
+    .loader-dot:nth-child(2){animation-delay:.2s;}
+    .loader-dot:nth-child(3){animation-delay:.4s;}
+
+    @keyframes loaderBlink{
+      0%{opacity:0.2;transform:translateY(0);}
+      100%{opacity:1;transform:translateY(-2px);}
+    }
+
+    .loader-tag{
+      font-size:10px;
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid rgba(34,197,94,0.6);
+      color:var(--accent-strong);
+      background:rgba(15,23,42,0.7);
+    }
+
+    .output{
+      margin-top:14px;
+      padding:12px 9px 6px;
+      border-radius:14px;
+      background:radial-gradient(circle at top,rgba(15,23,42,0.9),rgba(15,23,42,0.96));
+      border:1px solid rgba(148,163,184,0.45);
+      box-shadow:
+        0 18px 50px rgba(0,0,0,0.8),
+        0 0 18px rgba(15,23,42,0.9);
+      display:none;
+    }
+
+    .output-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:6px;
+      font-size:11px;
+      color:var(--muted);
+    }
+
+    .output-header-code{
+      font-family:ui-monospace,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      font-size:11px;
+      color:#9ca3af;
+      background:#020617;
+      padding:3px 6px;
+      border-radius:999px;
+      border:1px solid rgba(31,41,55,0.8);
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .item{
+      padding:8px 9px;
+      border-radius:12px;
+      background:radial-gradient(circle at 0 0,rgba(34,197,94,0.08),rgba(15,23,42,0.98));
+      border:1px solid rgba(148,163,184,0.55);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .item-main{
+      display:flex;
+      flex-direction:column;
+      gap:1px;
+    }
+
+    .label{
+      font-size:14px;
+      font-weight:800;
+      color:#e5e7eb;
+    }
+
+    .sub-label{
+      font-size:11px;
+      color:#9ca3af;
+      font-family:ui-monospace,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    }
+
+    .meta{
+      font-size:12px;
+      color:#dbeafe;
+      font-weight:700;
+      background:var(--badge-bg);
+      border-radius:999px;
+      padding:3px 9px;
+      white-space:nowrap;
+      border:1px solid rgba(34,197,94,0.6);
+      box-shadow:0 0 14px rgba(34,197,94,0.4);
+    }
+
+    .footer{
+      text-align:center;
+      margin-top:10px;
+      font-size:10px;
+      color:var(--muted);
+      border-top:1px solid rgba(148,163,184,0.25);
+      padding-top:6px;
+    }
+
+    .footer span{
+      color:var(--accent-strong);
+    }
+
+    @media (max-width:600px){
+      .wrap{padding:10px}
+      .panel{padding:12px 12px 8px}
+      h1{font-size:17px}
+      .controls{flex-direction:column;align-items:stretch}
+      input[type=number]{width:100%}
+      .btn{width:100%;font-size:15px;padding:11px 14px}
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="panel">
+    <div class="panel-inner">
+
+      <div class="app-header">
+        <div class="logo-block">
+          <div class="logo-mark">PX</div>
+          <div>
+            <div class="logo-text-main">PatternX Predictor</div>
+            <div class="logo-text-sub">Slot Pattern Engine</div>
+          </div>
+        </div>
+        <div class="app-version">v1.4.2</div>
+      </div>
+
+      <div class="top-row">
+        <h1>
+          <span class="cipher-dot"></span>
+          مولّد الأنماط
+        </h1>
+        <div class="status-pill">
+          <span class="status-dot"></span>
+          <span>وضع الهكر مفعّل</span>
+        </div>
+      </div>
+
+      <!-- SCREEN 1: SELECT GAME -->
+      <div id="screen-select" class="screen active">
+        <div class="subtitle">
+          اختر لعبة السلوت لحساب أنماط الرهانات حسب جدول الرهانات الحقيقي.
+        </div>
+
+        <div class="games-title">اختر اللعبة:</div>
+
+        <div class="games-column">
+          <!-- Sweet Bonanza Super Scatter -->
+          <button class="game-card" data-game="sweet">
+            <div class="game-thumb">
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMu-PtKvlakmJOzpGiDrvwhVo7VWl1Y5zddQ&s"
+                   alt="Sweet Bonanza Super Scatter">
+            </div>
+            <div class="game-info">
+              <div class="game-name">Sweet Bonanza Super Scatter</div>
+              <div class="game-meta">Stake table custom · volatility balanced</div>
+            </div>
+          </button>
+
+          <!-- Gates of Olympus -->
+          <button class="game-card" data-game="olympus">
+            <div class="game-thumb">
+              <img src="https://rara-avis.by/wp-content/uploads/2023/07/gates-of-olympus-pragmatic-play.jpg"
+                   alt="Gates of Olympus">
+            </div>
+            <div class="game-info">
+              <div class="game-name">Gates of Olympus</div>
+              <div class="game-meta">High variance · strong multipliers</div>
+            </div>
+          </button>
+
+          <!-- The Dog House Megaways -->
+          <button class="game-card" data-game="doghouse">
+            <div class="game-thumb">
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSryJQj5Dj8mBT6G3XtvgeC7zEcnXkQE7iI-w&s"
+                   alt="The Dog House Megaways">
+            </div>
+            <div class="game-info">
+              <div class="game-name">The Dog House Megaways</div>
+              <div class="game-meta">Volatile patterns · long lines</div>
+            </div>
+          </button>
+        </div>
+
+        <div class="hint">
+          اضغط على لعبة لفتح مولّد الأنماط الخاص بها.
+        </div>
+      </div>
+
+      <!-- SCREEN 2: GENERATOR -->
+      <div id="screen-generator" class="screen">
+        <div class="subtitle">
+          أنشئ <span>٥ أنماط مختلفة</span> من ميزانية واحدة. إذا كان مجموع الرهان أكبر من 1 USD فسيتم استخدام <span>لفة واحدة فقط</span> في هذا الصف.
+        </div>
+
+        <div class="current-game">
+          <div class="current-game-thumb">
+            <img id="currentGameImg" src="" alt="Selected game">
+          </div>
+          <div class="current-game-text">
+            <div class="current-game-title" id="currentGameLabel">Game</div>
+            <div class="current-game-sub" id="currentGameDesc">رهانات مرتبطة بجدول الرهانات الحقيقي في السلوت.</div>
+          </div>
+        </div>
+
+        <button id="backBtn" class="btn-ghost">
+          <span class="icon">←</span>
+          <span>تغيير اللعبة</span>
+        </button>
+
+        <div class="controls">
+          <div style="display:flex;flex-direction:column;width:100%">
+            <label for="budget">
+              إجمالي الميزانية (USD)
+              <span class="chip">من 5 فما فوق</span>
+            </label>
+            <input id="budget" type="number" value="6" min="1" placeholder="Ejemplo: 6">
+          </div>
+          <button id="gen" class="btn">
+            <span>الحصول على الاستراتيجية</span>
+          </button>
+        </div>
+
+        <div id="loader" class="loader">
+          <div class="loader-left">
+            <div class="loader-dots">
+              <div class="loader-dot"></div>
+              <div class="loader-dot"></div>
+              <div class="loader-dot"></div>
+            </div>
+            <span>تحليل الأنماط حسب ميزانيتك...</span>
+          </div>
+          <div class="loader-tag">SYSTEM: ACTIVE</div>
+        </div>
+
+        <div id="output" class="output">
+          <div class="output-header">
+            <span>نتيجة آخر تحليل</span>
+            <span class="output-header-code" id="sessionTag">SESSION #0000</span>
+          </div>
+          <div id="list" class="list"></div>
+          <div id="footer" class="footer"></div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="footer">
+        <div>PatternX Predictor <span>v1.4.2</span> · مهيأ للعملة USD</div>
+        <div style="margin-top:2px;">أداة للاستراتيجية الداخلية · لا تضمن أي نتائج.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+
+  const GAMES = {
+    sweet: {
+      label: "Sweet Bonanza Super Scatter",
+      desc: "رهانات مرتبطة بجدول الرهانات الحقيقي في السلوت.",
+      img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMu-PtKvlakmJOzpGiDrvwhVo7VWl1Y5zddQ&s",
+      bets: [0.6, 1.2, 1.8, 2, 2.4, 3, 3.6, 4, 4.2, 4.8, 5.4, 6, 8, 10, 12, 14, 16, 18, 20, 30, 40, 50]
+    },
+    doghouse: {
+      label: "The Dog House Megaways",
+      desc: "رهانات مرتبطة بجدول الرهانات الحقيقي في السلوت.",
+      img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSryJQj5Dj8mBT6G3XtvgeC7zEcnXkQE7iI-w&s",
+      bets: [1.4, 2.8, 4.2, 5.6, 7, 8.4, 9.8, 10, 11.2, 12.6, 14, 20, 30, 40, 50]
+    },
+    olympus: {
+      label: "Gates of Olympus",
+      desc: "رهانات مرتبطة بجدول الرهانات الحقيقي في السلوت.",
+      img: "https://rara-avis.by/wp-content/uploads/2023/07/gates-of-olympus-pragmatic-play.jpg",
+      bets: [1.4, 2.8, 4.2, 5.6, 7, 8.4, 9.8, 10, 11.2, 12.6, 14, 20, 30, 40, 50]
+    }
+  };
+
+  let currentGameKey = null;
+
+  const screenSelect = document.getElementById("screen-select");
+  const screenGenerator = document.getElementById("screen-generator");
+  const currentGameLabel = document.getElementById("currentGameLabel");
+  const currentGameDesc = document.getElementById("currentGameDesc");
+  const currentGameImg = document.getElementById("currentGameImg");
+
+  function showScreen(name){
+    screenSelect.classList.remove("active");
+    screenGenerator.classList.remove("active");
+    if (name === "select") screenSelect.classList.add("active");
+    if (name === "generator") screenGenerator.classList.add("active");
+  }
+
+  function delayedSwitch(targetScreen){
+    document.body.classList.add("page-transition");
+    setTimeout(() => {
+      showScreen(targetScreen);
+      document.body.classList.remove("page-transition");
+    }, 2000);
+  }
+
+  document.querySelectorAll(".game-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const key = card.dataset.game;
+      currentGameKey = key;
+      const g = GAMES[key];
+
+      currentGameLabel.textContent = g.label;
+      currentGameDesc.textContent = g.desc;
+      currentGameImg.src = g.img;
+      currentGameImg.alt = g.label;
+
+      delayedSwitch("generator");
+    });
+  });
+
+  document.getElementById("backBtn").addEventListener("click", () => {
+    delayedSwitch("select");
+  });
+
+  function randomUnique5(){
+    const s = new Set();
+    while (s.size < 5){
+      s.add(Math.floor(Math.random()*100) + 10);
+    }
+    return Array.from(s);
+  }
+
+  function snapToBet(value, betList){
+    let nearest = betList[0];
+    let diff = Math.abs(value - betList[0]);
+    for (let i = 1; i < betList.length; i++){
+      const d = Math.abs(value - betList[i]);
+      if (d < diff){
+        diff = d;
+        nearest = betList[i];
+      }
+    }
+    return nearest;
+  }
+
+  function computePattern(budget, betList){
+    const raw = randomUnique5();
+    const sumRaw = raw.reduce((a,b)=>a+b,0);
+    const scaled = raw.map(v => v / sumRaw * budget);
+    return scaled.map(v => snapToBet(v, betList));
+  }
+
+  function generateSpins(sum){
+    if (sum > 1) return 1;
+    const min = 2;
+    const max = 7;
+    return Math.floor(Math.random()*(max - min + 1)) + min;
+  }
+
+  function generateSessionId(){
+    const now = Date.now().toString(16).slice(-4);
+    const rand = Math.floor(Math.random()*4096).toString(16).padStart(3,"0");
+    return "#" + now.toUpperCase() + "-" + rand.toUpperCase();
+  }
+
+  function render(pattern, budget){
+    const list = document.getElementById("list");
+    const out = document.getElementById("output");
+    const footer = document.getElementById("footer");
+    const sessionTag = document.getElementById("sessionTag");
+
+    list.innerHTML = "";
+    sessionTag.textContent = "SESSION " + generateSessionId();
+
+    for (let i=0;i<5;i++){
+      const total = pattern[i];
+      const spins = generateSpins(total);
+
+      const div = document.createElement("div");
+      div.className = "item";
+
+      const main = document.createElement("div");
+      main.className = "item-main";
+
+      const label = document.createElement("div");
+      label.className = "label";
+      label.textContent = "إجمالي الرهان: " + total + " USD";
+
+      const sub = document.createElement("div");
+      sub.className = "sub-label";
+      sub.textContent = "السطر #" + (i+1) + " — نمط عالي التذبذب";
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.textContent = "عدد اللفات: " + spins;
+
+      main.appendChild(label);
+      main.appendChild(sub);
+      div.appendChild(main);
+      div.appendChild(meta);
+      list.appendChild(div);
+    }
+
+    const sum = pattern.reduce((a,b)=>a+b,0);
+    footer.textContent = "TOTAL DISTRIBUIDO ≈ " + sum.toFixed(2) + " USD   |   PRESUPUESTO INICIAL = " + budget + " USD";
+    out.style.display = "block";
+  }
+
+  const btn = document.getElementById("gen");
+  const loader = document.getElementById("loader");
+  const output = document.getElementById("output");
+
+  btn.addEventListener("click", () => {
+    const budget = parseFloat(document.getElementById("budget").value) || 0;
+    if (!currentGameKey){
+      alert("اختر اللعبة أولاً.");
+      return;
+    }
+    if (budget <= 0){
+      alert("أدخل ميزانية صالحة (أكبر من 0).");
+      return;
+    }
+
+    const game = GAMES[currentGameKey];
+
+    btn.disabled = true;
+    loader.style.display = "flex";
+    output.style.display = "none";
+
+    setTimeout(() => {
+      const pattern = computePattern(budget, game.bets);
+      render(pattern, budget);
+
+      loader.style.display = "none";
+      btn.disabled = false;
+    }, 1200);
+  });
+
+})();
+</script>
+</body>
+</html>
